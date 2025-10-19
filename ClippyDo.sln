@@ -5,6 +5,16 @@ VisualStudioVersion = 17.14.36401.2 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClippyDo.Core", "ClippyDo.Core\ClippyDo.Core.csproj", "{94D15BB3-36C8-4E18-B80B-5CCFD3CE3364}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClippyDo.Infrastructure", "ClippyDo.Infrastructure\ClippyDo.Infrastructure.csproj", "{4815CA8B-AE8C-4082-885C-3E1F1D538A11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClippyDo.Adapter.Sqlite", "ClippyDo.Adapter.Sqlite\ClippyDo.Adapter.Sqlite.csproj", "{8FB50F29-7569-473B-89A3-14E2B1A92913}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClippyDo.Adapter.Windows", "ClippyDo.Adapter.Windows\ClippyDo.Adapter.Windows.csproj", "{2D8AE06C-7A6F-4005-B7B8-0EF4E97CE206}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClippyDo.CompositionRoot", "ClippyDo.CompositionRoot\ClippyDo.CompositionRoot.csproj", "{DE0EEBB2-2D02-4F40-8D73-2064C6DAABC6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClippyDo.Tests.Architecture", "ClippyDo.Tests.Architecture\ClippyDo.Tests.Architecture.csproj", "{A978BA34-CD99-4BD5-98A0-5F7D5E3C4B84}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +25,26 @@ Global
 		{94D15BB3-36C8-4E18-B80B-5CCFD3CE3364}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94D15BB3-36C8-4E18-B80B-5CCFD3CE3364}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94D15BB3-36C8-4E18-B80B-5CCFD3CE3364}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4815CA8B-AE8C-4082-885C-3E1F1D538A11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4815CA8B-AE8C-4082-885C-3E1F1D538A11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4815CA8B-AE8C-4082-885C-3E1F1D538A11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4815CA8B-AE8C-4082-885C-3E1F1D538A11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FB50F29-7569-473B-89A3-14E2B1A92913}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FB50F29-7569-473B-89A3-14E2B1A92913}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FB50F29-7569-473B-89A3-14E2B1A92913}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FB50F29-7569-473B-89A3-14E2B1A92913}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D8AE06C-7A6F-4005-B7B8-0EF4E97CE206}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D8AE06C-7A6F-4005-B7B8-0EF4E97CE206}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D8AE06C-7A6F-4005-B7B8-0EF4E97CE206}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D8AE06C-7A6F-4005-B7B8-0EF4E97CE206}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE0EEBB2-2D02-4F40-8D73-2064C6DAABC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE0EEBB2-2D02-4F40-8D73-2064C6DAABC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE0EEBB2-2D02-4F40-8D73-2064C6DAABC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE0EEBB2-2D02-4F40-8D73-2064C6DAABC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A978BA34-CD99-4BD5-98A0-5F7D5E3C4B84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A978BA34-CD99-4BD5-98A0-5F7D5E3C4B84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A978BA34-CD99-4BD5-98A0-5F7D5E3C4B84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A978BA34-CD99-4BD5-98A0-5F7D5E3C4B84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

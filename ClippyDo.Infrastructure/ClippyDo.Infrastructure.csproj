@@ -7,4 +7,8 @@
     <WarningsAsErrors>nullable</WarningsAsErrors>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ClippyDo.Core\ClippyDo.Core.csproj" />
+  </ItemGroup>
+
 </Project>

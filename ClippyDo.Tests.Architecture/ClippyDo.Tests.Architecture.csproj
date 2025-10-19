@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="NUnit" Version="3.14.0" />
+    <PackageReference Include="NUnit.Analyzers" Version="3.9.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+    <PackageReference Include="NetArchTest.Rules" Version="1.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="NUnit.Framework" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ClippyDo.Core\ClippyDo.Core.csproj" />
+    <ProjectReference Include="..\ClippyDo.Infrastructure\ClippyDo.Infrastructure.csproj" />
+    <ProjectReference Include="..\ClippyDo.Adapter.Sqlite\ClippyDo.Adapter.Sqlite.csproj" />
+    <ProjectReference Include="..\ClippyDo.Adapter.Windows\ClippyDo.Adapter.Windows.csproj" />
+    <ProjectReference Include="..\ClippyDo.CompositionRoot\ClippyDo.CompositionRoot.csproj" />
+  </ItemGroup>
+
+</Project>
