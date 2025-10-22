@@ -1,13 +1,14 @@
-using System.Reflection;
+// Composition root
+using ClippyDo;
+// Adapters
+using ClippyDo.Adapter.Sqlite.Registration;
+using ClippyDo.Adapter.Windows.Registration;
+using ClippyDo.App.Wpf.Features.Picker;
 // Core
 using ClippyDo.Core.Features.Clipboard;
 // Infrastructure
 using ClippyDo.Infrastructure.Features.Clipboard;
-// Adapters
-using ClippyDo.Adapter.Sqlite.Registration;
-using ClippyDo.Adapter.Windows.Registration;
-// Composition root
-using ClippyDo;
+using System.Reflection;
 
 namespace ClippyDo.Tests.Architecture;
 
@@ -33,9 +34,9 @@ internal static class AssemblyRefs
     public static string AdapterWindowsNsRoot => NsRootOf(typeof(WindowsServiceCollectionExtensions));
     public static string CompositionRootNsRoot => NsRootOf(typeof(CompositionRoot.CompositionRoot));
 
-    // App.Wpf isn’t present yet
-    public static Assembly? AppWpfOrNull() => null;
-    public static string AppWpfNsRoot => "ClippyDo.App.Wpf"; // will be validated once the project exists
+    public static Assembly AppWpf => typeof(PickerWindow).Assembly;
+    public static string AppWpfNsRoot => NsRootOf(typeof(PickerWindow));
+    public static Assembly? AppWpfOrNull() => AppWpf;
 
     private static string NsRootOf(Type t)
     {
@@ -45,4 +46,26 @@ internal static class AssemblyRefs
         var take = Math.Min(parts.Length, 3);
         return string.Join(".", parts.Take(take));
     }
+
+    /// <summary>All currently loaded adapter assemblies whose simple name starts with "ClippyDo.Adapter".</summary>
+    public static Assembly[] AdapterAssemblies() =>
+        AppDomain.CurrentDomain
+            .GetAssemblies()
+            .Where(a => a.GetName().Name?.StartsWith("ClippyDo.Adapter", StringComparison.Ordinal) == true)
+            .Distinct()
+            .ToArray();
+
+    /// <summary>All adapter root namespaces derived from types in each adapter assembly.</summary>
+    public static string[] AdapterNsRoots() =>
+        AdapterAssemblies()
+            .Select(a =>
+            {
+                // Pick any public type to derive namespace root (3 segments)
+                var t = a.GetExportedTypes().FirstOrDefault() ?? a.GetTypes().First();
+                var ns = t.Namespace ?? a.GetName().Name!;
+                var parts = ns.Split('.');
+                return string.Join(".", parts.Take(Math.Min(parts.Length, 3)));
+            })
+            .Distinct()
+            .ToArray();
 }

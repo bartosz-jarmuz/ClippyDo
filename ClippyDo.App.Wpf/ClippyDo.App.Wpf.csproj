@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>ClippyDo.App.Wpf</AssemblyName>
+    <RootNamespace>ClippyDo.App.Wpf</RootNamespace>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <ApplicationIcon>Resources\ClippyDo.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Resources\ClippyDo.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\ClippyDo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.10" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="5.0.0" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\ClippyDo.Core\ClippyDo.Core.csproj" />
+    <ProjectReference Include="..\ClippyDo.CompositionRoot\ClippyDo.CompositionRoot.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Resource Include="Resources\ClippyDo.ico" />
+  </ItemGroup>
+</Project>

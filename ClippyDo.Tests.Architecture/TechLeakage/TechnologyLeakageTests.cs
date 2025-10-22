@@ -38,7 +38,18 @@ public class TechnologyLeakageTests
         {
             var result = Types.InAssembly(app).Should().NotHaveDependencyOnAny(SqlitePkgs).GetResult();
             Assert.That(result.IsSuccessful, Is.True,
-                $"App.Wpf leaks Sqlite APIs: {string.Join(", ", result.FailingTypeNames)}");
+                $"App.Wpf leaks Sqlite APIs: {string.Join(", ", result.FailingTypeNames ?? [])}");
         }
+    }
+
+    [Test]
+    public void AppWpf_Must_Not_Reference_Adapter_Assemblies()
+    {
+        var refs = AssemblyRefs.AppWpf.GetReferencedAssemblies().Select(a => a.Name!).ToArray();
+      
+        var offenders = refs.Where(x => x.Contains("ClippyDo.Adapter")).ToArray();
+
+        Assert.That(offenders, Is.Empty,
+            "ClippyDo.App.Wpf must not reference adapter assemblies. Found: " + string.Join(", ", offenders));
     }
 }

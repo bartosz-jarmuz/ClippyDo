@@ -6,12 +6,10 @@ using System.Reflection;
 namespace ClippyDo.Tests.Architecture.Layers;
 
 [Category("Architecture")]
-public class PortsAdaptersTests
+public partial class PortsAdaptersTests
 {
     private static readonly Assembly Core = AssemblyRefs.Core;
     private static readonly Assembly Infra = AssemblyRefs.Infrastructure;
-    private static readonly Assembly Sqlite = AssemblyRefs.AdapterSqlite;
-    private static readonly Assembly Windows = AssemblyRefs.AdapterWindows;
 
     [Test]
     public void All_Public_Interfaces_Used_By_Adapters_Or_Infrastructure_Are_Defined_In_Core()
@@ -25,7 +23,7 @@ public class PortsAdaptersTests
         bool InterfaceOwnedByCore(Type itf) =>
             IsFrameworkNs(itf.Namespace ?? "") || coreInterfaces.Contains(itf);
 
-        foreach (var asm in new[] { Sqlite, Windows, Infra })
+        foreach (var asm in AssemblyRefs.AdapterAssemblies().Concat(new[] { Infra }))
         {
             var offenders = asm.GetTypes()
                 .Where(t => t.IsClass)
@@ -35,30 +33,31 @@ public class PortsAdaptersTests
                 .ToArray();
 
             Assert.That(offenders, Is.Empty,
-                $"{asm.GetName().Name}: These public interfaces are not owned by Core: {string.Join(", ", offenders.Select(o => o.FullName))}");
+                $"{asm.GetName().Name}: These public interfaces are not owned by Core:\n" +
+                string.Join("\n", offenders.Select(o => o.FullName)));
         }
     }
 
     [Test]
     public void Adapters_Should_Not_Declare_Public_Interfaces()
     {
-        foreach (var asm in new[] { Sqlite, Windows })
+        foreach (var asm in AssemblyRefs.AdapterAssemblies())
         {
             var offenders = asm.GetTypes()
                 .Where(t => t.IsInterface && t.IsPublic)
-                .Select(t => t.FullName)
+                .Select(t => $"{asm.GetName().Name}:{t.FullName}")
                 .ToArray();
 
             Assert.That(offenders, Is.Empty,
-                $"{asm.GetName().Name}: Adapters must not expose public interfaces. Found: {string.Join(", ", offenders)}");
+                $"{asm.GetName().Name}: adapters must not expose public interfaces. Found:\n" +
+                string.Join("\n", offenders));
         }
     }
 
     [Test]
     public void No_Public_API_Leakage_Of_Adapter_Types_In_Core_Or_Infrastructure()
     {
-        static bool IsAdapterNs(string? ns) =>
-            (ns != null) && (ns.StartsWith(AssemblyRefs.AdapterSqliteNsRoot) || ns.StartsWith(AssemblyRefs.AdapterWindowsNsRoot));
+        static bool IsAdapterNs(string? ns) => ns != null && ns.StartsWith("ClippyDo.Adapter", StringComparison.Ordinal);
 
         foreach (var asm in new[] { Core, Infra })
         {
@@ -78,7 +77,16 @@ public class PortsAdaptersTests
                    .ToArray();
 
             Assert.That(offenders, Is.Empty,
-                $"{asm.GetName().Name}: Public API must not expose adapter types: {string.Join(", ", offenders.Select(o => o.FullName))}");
+                $"{asm.GetName().Name}: Public API must not expose adapter types:\n" +
+                string.Join("\n", offenders.Select(o => o.FullName)));
         }
+    }
+
+    [Test]
+    public void IStartupTask_Must_Reside_In_Core_Assembly()
+    {
+        var owner = typeof(ClippyDo.Core.Abstractions.IStartupTask).Assembly;
+        Assert.That(owner, Is.EqualTo(Core),
+            $"IStartupTask must live in Core. Currently: {owner.GetName().Name}");
     }
 }

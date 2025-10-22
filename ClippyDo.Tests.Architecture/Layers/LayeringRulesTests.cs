@@ -13,13 +13,11 @@ public class LayeringRulesTests
         var forbidden = new[]
         {
             AssemblyRefs.InfraNsRoot,
-            AssemblyRefs.AdapterSqliteNsRoot,
-            AssemblyRefs.AdapterWindowsNsRoot,
             AssemblyRefs.CompositionRootNsRoot,
             AssemblyRefs.AppWpfNsRoot,
             "System.Windows", "Microsoft.UI", "Microsoft.Win32",
             "Microsoft.Data.Sqlite", "System.Data.SQLite", "SQLitePCL"
-        };
+        }.Concat(AssemblyRefs.AdapterNsRoots()).ToArray();
 
         var res = Types.InAssembly(AssemblyRefs.Core)
             .Should().NotHaveDependencyOnAny(forbidden)
@@ -27,14 +25,12 @@ public class LayeringRulesTests
 
         if (!res.IsSuccessful)
         {
-            // Show which forbidden namespaces were matched
             var offenders = Types.InAssembly(AssemblyRefs.Core)
                 .That().HaveDependencyOnAny(forbidden)
                 .GetTypes();
 
-            Assert.Fail(
-                "Core has forbidden deps:\n" +
-                string.Join("\n", offenders.Select(t => $" - {t.FullName}")));
+            Assert.Fail("Core has forbidden deps:\n" +
+                        string.Join("\n", offenders.Select(t => $" - {t.FullName}")));
         }
     }
 
@@ -43,13 +39,11 @@ public class LayeringRulesTests
     {
         var forbidden = new[]
         {
-            AssemblyRefs.AdapterSqliteNsRoot,
-            AssemblyRefs.AdapterWindowsNsRoot,
             AssemblyRefs.CompositionRootNsRoot,
             AssemblyRefs.AppWpfNsRoot,
             "System.Windows", "Microsoft.UI", "Microsoft.Win32",
             "Microsoft.Data.Sqlite", "System.Data.SQLite", "SQLitePCL"
-        };
+        }.Concat(AssemblyRefs.AdapterNsRoots()).ToArray();
 
         var res = Types.InAssembly(AssemblyRefs.Infrastructure)
             .Should().NotHaveDependencyOnAny(forbidden)
@@ -61,63 +55,36 @@ public class LayeringRulesTests
                 .That().HaveDependencyOnAny(forbidden)
                 .GetTypes();
 
-            Assert.Fail(
-                "Infrastructure has forbidden deps:\n" +
-                string.Join("\n", offenders.Select(t => $" - {t.FullName}")));
+            Assert.Fail("Infrastructure has forbidden deps:\n" +
+                        string.Join("\n", offenders.Select(t => $" - {t.FullName}")));
         }
     }
 
     [Test]
-    public void Adapters_Sqlite_Must_Depend_Only_On_Core()
+    public void Adapters_Must_Depend_Only_On_Core()
     {
         var forbidden = new[]
         {
             AssemblyRefs.InfraNsRoot,
-            AssemblyRefs.AdapterWindowsNsRoot,
             AssemblyRefs.CompositionRootNsRoot,
             AssemblyRefs.AppWpfNsRoot
         };
 
-        var res = Types.InAssembly(AssemblyRefs.AdapterSqlite)
-            .Should().NotHaveDependencyOnAny(forbidden)
-            .GetResult();
-
-        if (!res.IsSuccessful)
+        foreach (var asm in AssemblyRefs.AdapterAssemblies())
         {
-            var offenders = Types.InAssembly(AssemblyRefs.AdapterSqlite)
-                .That().HaveDependencyOnAny(forbidden)
-                .GetTypes();
+            var res = Types.InAssembly(asm)
+                .Should().NotHaveDependencyOnAny(forbidden)
+                .GetResult();
 
-            Assert.Fail(
-                "Adapter.Sqlite has forbidden deps:\n" +
-                string.Join("\n", offenders.Select(t => $" - {t.FullName}")));
-        }
-    }
+            if (!res.IsSuccessful)
+            {
+                var offenders = Types.InAssembly(asm)
+                    .That().HaveDependencyOnAny(forbidden)
+                    .GetTypes();
 
-    [Test]
-    public void Adapters_Windows_Must_Depend_Only_On_Core()
-    {
-        var forbidden = new[]
-        {
-            AssemblyRefs.InfraNsRoot,
-            AssemblyRefs.AdapterSqliteNsRoot,
-            AssemblyRefs.CompositionRootNsRoot,
-            AssemblyRefs.AppWpfNsRoot
-        };
-
-        var res = Types.InAssembly(AssemblyRefs.AdapterWindows)
-            .Should().NotHaveDependencyOnAny(forbidden)
-            .GetResult();
-
-        if (!res.IsSuccessful)
-        {
-            var offenders = Types.InAssembly(AssemblyRefs.AdapterWindows)
-                .That().HaveDependencyOnAny(forbidden)
-                .GetTypes();
-
-            Assert.Fail(
-                "Adapter.Windows has forbidden deps:\n" +
-                string.Join("\n", offenders.Select(t => $" - {t.FullName}")));
+                Assert.Fail($"{asm.GetName().Name} has forbidden deps:\n" +
+                            string.Join("\n", offenders.Select(t => $" - {t.FullName}")));
+            }
         }
     }
 
@@ -129,21 +96,19 @@ public class LayeringRulesTests
             .GetResult();
 
         Assert.That(res.IsSuccessful, Is.True,
-            () => "CompositionRoot must not depend on App.Wpf: " + string.Join("\n", res.FailingTypeNames));
+            () => "CompositionRoot must not depend on App.Wpf:\n" + string.Join("\n", res.FailingTypeNames));
     }
 
     [Test]
-    public void AppWpf_When_Present_Must_Only_Depend_On_Core_And_CompositionRoot()
+    public void AppWpf_Must_Only_Depend_On_Core_And_CompositionRoot()
     {
         var app = AssemblyRefs.AppWpfOrNull();
         if (app is null) Assert.Pass("App.Wpf not present yet.");
 
         var forbidden = new[]
         {
-            AssemblyRefs.InfraNsRoot,
-            AssemblyRefs.AdapterSqliteNsRoot,
-            AssemblyRefs.AdapterWindowsNsRoot
-        };
+            AssemblyRefs.InfraNsRoot
+        }.Concat(AssemblyRefs.AdapterNsRoots()).ToArray();
 
         var res = Types.InAssembly(app!)
             .Should().NotHaveDependencyOnAny(forbidden)
@@ -155,9 +120,8 @@ public class LayeringRulesTests
                 .That().HaveDependencyOnAny(forbidden)
                 .GetTypes();
 
-            Assert.Fail(
-                "App.Wpf has forbidden deps:\n" +
-                string.Join("\n", offenders.Select(t => $" - {t.FullName}")));
+            Assert.Fail("App.Wpf has forbidden deps:\n" +
+                        string.Join("\n", offenders.Select(t => $" - {t.FullName}")));
         }
     }
 }
