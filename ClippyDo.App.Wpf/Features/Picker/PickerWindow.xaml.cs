@@ -16,23 +16,6 @@ public partial class PickerWindow : Window
         _tray = tray;
     }
 
-    private void TitleBar_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-    {
-        if (e.ClickCount == 2)
-        {
-            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
-        }
-        else
-        {
-            DragMove();
-        }
-    }
-
-    private void CloseButton_Click(object sender, RoutedEventArgs e)
-    {
-        HideToTray();
-    }
-
     protected override void OnClosing(CancelEventArgs e)
     {
         e.Cancel = true;   // close always hides to tray

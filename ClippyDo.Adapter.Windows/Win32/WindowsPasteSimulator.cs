@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Windows;
+using ClippyDo.Adapter.Windows.Interop;
 using ClippyDo.Core.Abstractions;
 using Clipboard = System.Windows.Clipboard;
 using TextDataFormat = System.Windows.TextDataFormat;
@@ -18,17 +19,47 @@ internal sealed class WindowsPasteSimulator : IPasteSimulator
 
     public void PastePlainText(string text)
     {
-        var backup = Clipboard.GetDataObject();
+        System.Windows.IDataObject? backup = null;
+
         try
         {
-            Clipboard.Clear();
-            Clipboard.SetText(text ?? string.Empty, TextDataFormat.UnicodeText);
+            // Snapshot current clipboard (best-effort)
+            backup = ClipboardRetry.Run(() => Clipboard.GetDataObject());
+
+            // Put plain text on clipboard with "copy=true" to avoid owning it longer than needed
+            ClipboardRetry.Run(() =>
+            {
+                Clipboard.SetDataObject(text ?? string.Empty, /* copy: */ true);
+                return 0;
+            });
+
+            // Do the paste (target app reads the current CF_UNICODETEXT)
             Paste();
+
+            // Restore previous clipboard shortly after paste, not synchronously
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(150); // small delay to let target app read
+                if (backup is not null)
+                {
+                    try
+                    {
+                        ClipboardRetry.Run(() =>
+                        {
+                            Clipboard.SetDataObject(backup, /* copy: */ true);
+                            return 0;
+                        }, attempts: 8, initialDelayMs: 16);
+                    }
+                    catch
+                    {
+                        // Swallow restore failures; user won't want an error here
+                    }
+                }
+            });
         }
-        finally
+        catch
         {
-            if (backup is not null)
-                Clipboard.SetDataObject(backup, true);
+            // Swallow: plain paste must be best-effort and never throw
         }
     }
 
