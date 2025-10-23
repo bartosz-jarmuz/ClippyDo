@@ -4,6 +4,6 @@ namespace ClippyDo.Core.Abstractions;
 
 public interface IPasteSimulator
 {
-    void Paste(Clip clip);
+    void Paste();
     void PastePlainText(string text);
 }

@@ -1,4 +1,5 @@
-﻿using ClippyDo.Core.Abstractions;
+
+using ClippyDo.Core.Abstractions;
 using ClippyDo.Core.Features.Clipboard;
 using ClippyDo.Core.Features.Settings;
 
@@ -20,7 +21,7 @@ public sealed class TaggingService
         {
             var text = clip.PlainText!;
             if (_regex.IsMatch(text, _settings.NumbersRegex)) clip.Tags.Add("IsNumber");
-            if (_settings.CustomRegex is { Length: > 0 } && _regex.IsMatch(text, _settings.CustomRegex)) clip.Tags.Add("MatchesCustomRegex");
+            if (!string.IsNullOrWhiteSpace(_settings.CustomRegex) && _regex.IsMatch(text, _settings.CustomRegex!)) clip.Tags.Add("MatchesCustomRegex");
             if (_regex.IsMatch(text, _settings.PathsRegex)) clip.Tags.Add("IsPath");
         }
     }
